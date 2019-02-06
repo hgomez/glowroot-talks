@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  glowroot-central-db:
+    container_name: glowroot-central-db
+    image: cassandra:3.11.3
+    networks:
+     - glowroot-central
+  glowroot-central:
+    container_name: glowroot-central-server
+    image: glowroot/glowroot-central:0.13.0
+    ports:
+      - "0.0.0.0:4000:4000"
+      - "0.0.0.0:8181:8181"
+    links:
+      - glowroot-central-db:cassandra
+    depends_on:
+      - glowroot-central-db
+    networks:
+     - glowroot-central
+
+networks:
+  glowroot-central: 
+    driver: bridge
