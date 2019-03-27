@@ -3,22 +3,24 @@ version: '3'
 services:
   sonarqube:
     container_name: sonarqube-server
-    image: sonarqube:7.6-community
+    image: sonarqube-glowroot:7.7-community
     ports:
       - "9000:9000"
-    networks:
-      - sonarqube-network
+#    networks:
+#      - sonarqube-network
     environment:
       - sonar.jdbc.url=jdbc:postgresql://sonarqube-db:5432/sonar
+      - sonar.web.javaAdditionalOpts=-javaagent:/opt/sonarqube/glowroot/glowroot.jar -Dglowroot.multi.dir=true -Dglowroot.agent.id=web -Dglowroot.agent.rollup.id=sonarqube-7.7-glowroot-talks -Dglowroot.conf.dir=/opt/sonarqube/glowroot/conf -Dglowroot.log.dir=/opt/sonarqube/glowroot/logs -Dglowroot.tmp.dir=/opt/sonarqube/glowroot/tmp -Dglowroot.collector.address=glowroot-central:8181
+      - sonar.ce.javaAdditionalOpts=-javaagent:/opt/sonarqube/glowroot/glowroot.jar -Dglowroot.multi.dir=true -Dglowroot.agent.id=ce -Dglowroot.agent.rollup.id=sonarqube-7.7-glowroot-talks -Dglowroot.conf.dir=/opt/sonarqube/glowroot/conf -Dglowroot.log.dir=/opt/sonarqube/glowroot/logs -Dglowroot.tmp.dir=/opt/sonarqube/glowroot/tmp -Dglowroot.collector.address=glowroot-central:8181
     volumes:
       - sonarqube_conf:/opt/sonarqube/conf
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
   sonarqube-db:
     container_name: sonarqube-db
-    image: postgres:11.1
-    networks:
-      - sonarqube-network
+    image: postgres:11.2
+#    networks:
+#      - sonarqube-network
     environment:
       - POSTGRES_USER=sonar
       - POSTGRES_PASSWORD=sonar
@@ -27,9 +29,14 @@ services:
       # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52
       - postgresql_data:/var/lib/postgresql/data
 
+#networks:
+#  sonarqube-network:
+#    driver: bridge
+
 networks:
-  sonarqube-network:
-    driver: bridge
+  default:
+    external:
+      name: glowroot_glowroot-central
 
 volumes:
   sonarqube_conf:
