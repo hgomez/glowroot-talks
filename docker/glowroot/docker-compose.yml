@@ -8,7 +8,7 @@ services:
       - glowroot-central
   glowroot-central:
     container_name: glowroot-central-server
-    image: glowroot/glowroot-central:0.13.2
+    image: glowroot/glowroot-central:0.13.4
     ports:
       - "0.0.0.0:4000:4000"
       - "0.0.0.0:8181:8181"

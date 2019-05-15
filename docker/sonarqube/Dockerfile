@@ -1,6 +1,6 @@
 FROM sonarqube:7.7-community
 
-ENV GLOWROOT_VERSION=0.13.2
+ENV GLOWROOT_VERSION=0.13.4
 
 # grab glowroot and install it
 RUN set -x \
